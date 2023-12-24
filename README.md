@@ -30,3 +30,5 @@ Flags:
 
 You can attach to the application by providing its name as `-a` flag or you can spawn the application by passing `-a` with 
 bundle identifier along with the `-s` flag.
+
+![Running on Telegram](./running.png)
