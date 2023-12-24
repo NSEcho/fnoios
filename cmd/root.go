@@ -13,8 +13,8 @@ import (
 var scriptContent string
 
 var rootCmd = &cobra.Command{
-	Use:   "fduplicator",
-	Short: "Intercept FD writes",
+	Use:   "fnoios",
+	Short: "iOS stdout/stderr => pty",
 	CompletionOptions: cobra.CompletionOptions{
 		DisableDefaultCmd: true,
 	},

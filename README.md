@@ -16,14 +16,14 @@ _Manually_
 $ git clone https://github.com/NSEcho/fnoios && cd fnoios
 $ go build
 $ ./fnoios --help
-Intercept FD writes
+iOS stdout/stderr => pty
 
 Usage:
-  fduplicator [flags]
+  fnoios [flags]
 
 Flags:
   -a, --app string   Application name to attach to
-  -h, --help         help for fduplicator
+  -h, --help         help for fnoios
   -p, --pid int      PID of process to attach to (default -1)
   -s, --spawn        Spawn the app/file
 ```
