@@ -7,7 +7,7 @@ the app logs but you cannot spawn the application with `ios-deploy` you can util
 _Using go install_
 
 ```bash
-$ go install github.com/NSEcho/fnoios@latest
+$ go install github.com/nsecho/fnoios@latest
 ```
 
 _Manually_
