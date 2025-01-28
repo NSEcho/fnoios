@@ -1,8 +1,8 @@
 github.com/cpuguy83/go-md2man/v2 v2.0.3/go.mod h1:tgQtvFlXSQOSOSIRvRPT7W67SCa46tRHOmNcaadrF8o=
-github.com/frida/frida-go v0.6.10 h1:al5QBVmFTxQ8PtKIIR8CB1+E7AVpLy8VgYWnNY/6uJU=
-github.com/frida/frida-go v0.6.10/go.mod h1:OyRIp58wuTcGggI6ztakXcHkTXrt5WfD9yi3pq6QyGw=
-github.com/google/uuid v1.3.0 h1:t6JiXgmwXMjEs8VusXIJk2BXHsn+wx8BZdTaoZ5fu7I=
-github.com/google/uuid v1.3.0/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
+github.com/frida/frida-go v0.12.1 h1:dHOdJU3wuQkvlb7Lan0RFSm0lpCJH6cW8IbYOxt9C0E=
+github.com/frida/frida-go v0.12.1/go.mod h1:OyRIp58wuTcGggI6ztakXcHkTXrt5WfD9yi3pq6QyGw=
+github.com/google/uuid v1.6.0 h1:NIvaJDMOsjHA8n1jAhLSgzrAzy1Hgr+hNrb57e+94F0=
+github.com/google/uuid v1.6.0/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
 github.com/inconshreveable/mousetrap v1.1.0 h1:wN+x4NVGpMsO7ErUn/mUI3vEoE6Jt13X2s0bqwp9tc8=
 github.com/inconshreveable/mousetrap v1.1.0/go.mod h1:vpF70FUmC8bwa3OWnCshd2FqLfsEA9PFc4w1p2J65bw=
 github.com/russross/blackfriday/v2 v2.1.0/go.mod h1:+Rmxgy9KzJVeS9/2gXHxylqXiyQDYRxCVz55jmeOWTM=

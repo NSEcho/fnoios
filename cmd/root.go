@@ -1,122 +1,60 @@
 package cmd
 
 import (
+	"bufio"
 	"errors"
 	"fmt"
 	"github.com/frida/frida-go/frida"
 	"github.com/spf13/cobra"
 	"os"
-	"os/signal"
-	"strings"
 )
-
-var scriptContent string
 
 var rootCmd = &cobra.Command{
 	Use:   "fnoios",
-	Short: "iOS stdout/stderr => pty",
+	Short: "iOS read output",
 	CompletionOptions: cobra.CompletionOptions{
 		DisableDefaultCmd: true,
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
+		if len(args) == 0 {
+			return errors.New("missing app name")
+		}
+
+		app := args[0]
+
 		dev := frida.USBDevice()
 		if dev == nil {
 			return errors.New("no USB device detected")
 		}
 		defer dev.Clean()
 
-		spawn, err := cmd.Flags().GetBool("spawn")
-		if err != nil {
-			return err
-		}
-
-		app, err := cmd.Flags().GetString("app")
-		if err != nil {
-			return err
-		}
-
-		pd, err := cmd.Flags().GetInt("pid")
-		if err != nil {
-			return err
-		}
-
-		if app == "" && pd == -1 {
-			return errors.New("you need to specify either --app or --pid")
-		}
-
-		pid := 0
-
-		var session *frida.Session
-		if app != "" {
-			if spawn {
-				spawnedPid, err := dev.Spawn(app, nil)
-				if err != nil {
-					return err
-				}
-				pid = spawnedPid
-				s, err := dev.Attach(spawnedPid, nil)
-				if err != nil {
-					return err
-				}
-				session = s
-			} else {
-				s, err := dev.Attach(app, nil)
-				if err != nil {
-					return err
-				}
-				session = s
-			}
-		} else {
-			s, err := dev.Attach(pd, nil)
-			if err != nil {
-				return err
-			}
-			session = s
-		}
-
-		script, err := session.CreateScript(scriptContent)
-		if err != nil {
-			return err
-		}
-
-		script.On("message", func(message string) {
-			if !strings.Contains(message, "can't decode byte") {
-				msg, err := frida.ScriptMessageToMessage(message)
-				if err != nil {
-					return
-				}
-				mappedPayload := msg.Payload.(map[string]any)
-				fmt.Printf("%s", mappedPayload["data"])
-			}
+		dev.On("output", func(pid, fd int, data []byte) {
+			fmt.Printf("[fd=%d] %s", fd, string(data))
 		})
 
-		if err := script.Load(); err != nil {
+		opts := frida.NewSpawnOptions()
+		opts.SetStdio(frida.StdioPipe)
+
+		pid, err := dev.Spawn(app, opts)
+		if err != nil {
 			return err
 		}
 
-		if spawn {
-			dev.Resume(pid)
+		session, err := dev.Attach(pid, nil)
+		if err != nil {
+			return err
 		}
 
-		script.ExportsCall("start")
+		session.On("detached", func(reason frida.SessionDetachReason, crash *frida.Crash) {
+			fmt.Printf("detached: %s\n", reason)
+		})
 
-		go func() {
-			for {
-				_ = script.ExportsCall("read")
-			}
-		}()
-
-		c := make(chan os.Signal, 1)
-		signal.Notify(c, os.Interrupt)
-		for sig := range c {
-			_ = sig
-			fmt.Println("[*] Exiting...\nUnloading script")
-			if err := script.Unload(); err != nil {
-				return err
-			}
-			fmt.Println("Script unloaded")
-			return nil
+		if err := dev.Resume(pid); err != nil {
+			return err
 		}
+
+		r := bufio.NewReader(os.Stdin)
+		r.ReadLine()
 		return nil
 	},
 	SilenceUsage:  true,
@@ -124,12 +62,8 @@ var rootCmd = &cobra.Command{
 }
 
 func init() {
-	rootCmd.Flags().StringP("app", "a", "", "Application name to attach to")
-	rootCmd.Flags().IntP("pid", "p", -1, "PID of process to attach to")
-	rootCmd.Flags().BoolP("spawn", "s", false, "Spawn the app/file")
 }
 
-func Execute(script string) error {
-	scriptContent = script
+func Execute() error {
 	return rootCmd.Execute()
 }

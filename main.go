@@ -7,11 +7,8 @@ import (
 	"os"
 )
 
-//go:embed script/script.js
-var script string
-
 func main() {
-	if err := cmd.Execute(script); err != nil {
+	if err := cmd.Execute(); err != nil {
 		fmt.Fprintf(os.Stderr, "errorr: %v\n", err)
 		os.Exit(1)
 	}
