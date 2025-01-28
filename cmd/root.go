@@ -4,13 +4,14 @@ import (
 	"bufio"
 	"errors"
 	"fmt"
+	"os"
+
 	"github.com/frida/frida-go/frida"
 	"github.com/spf13/cobra"
-	"os"
 )
 
 var rootCmd = &cobra.Command{
-	Use:   "fnoios",
+	Use:   "fnoios [app]",
 	Short: "iOS read output",
 	CompletionOptions: cobra.CompletionOptions{
 		DisableDefaultCmd: true,
