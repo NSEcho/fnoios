@@ -52,6 +52,16 @@ var rootCmd = &cobra.Command{
 			}
 		})
 
+		dev.On("process_crashed", func(crash *frida.Crash) {
+			fmt.Printf("process crashed: %s\n", crash)
+			os.Exit(1)
+		})
+
+		dev.On("lost", func() {
+			fmt.Println("device lost")
+			os.Exit(1)
+		})
+
 		opts := frida.NewSpawnOptions()
 		opts.SetStdio(frida.StdioPipe)
 
@@ -59,15 +69,6 @@ var rootCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
-
-		session, err := dev.Attach(pid, nil)
-		if err != nil {
-			return err
-		}
-
-		session.On("detached", func(reason frida.SessionDetachReason, crash *frida.Crash) {
-			fmt.Printf("detached: %s\n", reason)
-		})
 
 		if err := dev.Resume(pid); err != nil {
 			return err
