@@ -4,14 +4,22 @@ import (
 	"bufio"
 	"errors"
 	"fmt"
-	"os"
-
 	"github.com/frida/frida-go/frida"
 	"github.com/spf13/cobra"
+	"os"
 )
 
+const (
+	chSize = 512
+)
+
+type output struct {
+	fd   int
+	data []byte
+}
+
 var rootCmd = &cobra.Command{
-	Use:   "fnoios [app]",
+	Use:   "fnoios",
 	Short: "iOS read output",
 	CompletionOptions: cobra.CompletionOptions{
 		DisableDefaultCmd: true,
@@ -29,8 +37,19 @@ var rootCmd = &cobra.Command{
 		}
 		defer dev.Clean()
 
+		ch := make(chan *output, chSize)
+
+		go func() {
+			for out := range ch {
+				fmt.Printf("[fd=%d] %s", out.fd, out.data)
+			}
+		}()
+
 		dev.On("output", func(pid, fd int, data []byte) {
-			fmt.Printf("[fd=%d] %s", fd, string(data))
+			ch <- &output{
+				fd:   fd,
+				data: data,
+			}
 		})
 
 		opts := frida.NewSpawnOptions()
